@@ -18,5 +18,4 @@ COPY static/ static/
 EXPOSE 8080
 
 # gunicornを使用してFlaskアプリケーションを実行
-# CMD ["gunicorn", "-b=:8080", "-w=1", "app:app"]
-CMD ["python","app.py"]
+CMD ["gunicorn", "-b=:8080", "-w=1", "app:app"]
