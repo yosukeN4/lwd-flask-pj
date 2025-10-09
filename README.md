@@ -18,14 +18,67 @@ awsリソース, python, flask:　これらを組み合わせて、下記の要�
 - 実装したメソッドへのunittest
 - セキュリティに関する詳細な実装
     - APIGatewayへのWAF適用
-    - Lambdaに割り当てるIAMポリシーの最小権限
+    - Lambdaに割り当てるIAMポリシーの最小権限の設定
+
+## 企画のモチベーション
+
+## 強く参考又は借用したコード
+* `Movies`classと、内部で使われているboto3を使ったpythonのscriptはほぼすべてawsが提供するsdkのサンプルコードを利用
+* リンク先:[dynamodb code examples](https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/python/example_code/dynamodb)
 
 # 構成図
 
 ![構成図](./images/ysk-port-01.png)
 
+- APIGatewayとlambdaはSAM_CLIでデプロイ。
+- dynamodbテーブルは事前に手動で作成
+    - capacityはプロビジョニングで、readもwriteもUnit数=1
 
 # データモデルとサンプルデータ
+
+## dynamodbテーブルに挿入するデータ
+
+```json
+# Example data structure for a movie record in this table:
+{
+    "year": 1999,
+    "title": "For Love of the Game",
+    "info": {
+        "directors": ["Sam Raimi"],
+        "release_date": "1999-09-15T00:00:00Z",
+        "rating": 6.3,
+        "plot": "A washed up pitcher flashes through his career.",
+        "rank": 4987,
+        "running_time_secs": 8220,
+        "actors": [
+            "Kevin Costner",
+            "Kelly Preston",
+            "John C. Reilly"
+        ]
+    }
+}
+```
+
+## テーブル定義
+
+| key         | name  | type            | 
+| ----------- | ----- | --------------- | 
+| Primary key | year  | Number(integer) | 
+| Sort key    | title | String          | 
+
+info属性には、dict型でデータを入れれます。
+
+## dynamodbテーブル名
+テーブル名は`test_getstart`とする。
+
+# 実装するendpoint、メソッド、対応付ける関数名
+| Endpoint    | method   | 対応する関数   | 
+| ----- | ----- | ----- | 
+| api.ysklab.work/movies   | GET   | item_get() | 
+| api.ysklab.work/movies/add   | POST   | item_add() | 
+| api.ysklab.work/movies/delete  | POST   | item_delete() | 
+| api.ysklab.work/movies/exists  | GET   | movie_exists() | 
+
 
 # 操作方法
 
@@ -35,18 +88,78 @@ awsリソース, python, flask:　これらを組み合わせて、下記の要�
 - item_get
 - item_delete
 
-## movie_is_exists 
+## movie_is_exists()
+
+| 引数   | type                      | どこから取得するか | 
+| ------ | ------------------------- | ------------------ | 
+| movies | Movieクラスのインスタンス | グローバル変数     | 
+| table_name | String | グローバル変数 |
+
+
+| 戻り値           | type    | 
+| ---------------- | ------- | 
+| Code             | integer | 
+| is_movies_exists | bool | 
 
 ```bash
-curl -X GET https://target.domain.com/api 
--data '{}' 
+curl -X GET https://target.domain.com/movies/exists
 ```
 
-## item_add
+## item_add()
 
-## item_get
+| 引数   | type                      | どこから取得するか   | 
+| ------ | ------------------------- | -------------------- | 
+| movies | Movieクラスのインスタンス | グローバル変数       | 
+| title  | String                    | POSTリクエストボディ | 
+| year   | Number                    | POSTリクエストボディ | 
+| plot   | String                    | POSTリクエストボディ | 
+| rating | float                     | POSTリクエストボディ |
 
-## item_delete
+| 戻り値 | type    | 
+| ------ | ------- | 
+| Code   | integer | 
+| status | string  | 
+
+```bash
+curl -X POST https://target.domain.com/movies/add \
+     -data '{"title": "Matrix", "year": 2000, "plot": "good", "rating": 9.8}' 
+```
+
+## item_get()
+
+| 引数   | type                      | どこから取得するか          | 
+| ------ | ------------------------- | --------------------------- | 
+| movies | Movieクラスのインスタンス | グローバル変数              | 
+| title  | String                    | GETリクエストパラメータ引数 | 
+| year   | Number                    | GETリクエストパラメータ引数 | 
+
+| 戻り値 | type    | 
+| ------ | ------- | 
+| Code   | integer | 
+| status | Itemオブジェクト  | 
+
+```bash
+curl -X GET https://target.domain.com/movies \
+     -data '{"title": "Matrix", "year": 2000}' 
+```
+
+## item_delete()
+
+| 引数   | type                      | どこから取得するか   | 
+| ------ | ------------------------- | -------------------- | 
+| movies | Movieクラスのインスタンス | グローバル変数       | 
+| title  | String                    | POSTリクエストボディ | 
+| year   | Number                    | POSTリクエストボディ | 
+
+| 戻り値 | type    | 
+| ------ | ------- | 
+| Code   | integer | 
+| status | string  | 
+
+```bash
+curl -X POST https://target.domain.com/movies/delete \
+     -data '{"title": "Matrix", "year": 2000}' 
+```
 
 # テスト
 
@@ -54,5 +167,17 @@ pythonコードを書いてunittestは実施しないが、デプロイ後に
 Postmanから上記`curl`によるエンドテストは実施
 
 # 参考資料
+* [dynamodb code examples](https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/python/example_code/dynamodb)
+* [SAM_CLI公式ドキュメント](https://github.com/aws/aws-sam-cli)
+* [boto3公式ドキュメント](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
+* [flask公式ドキュメント_英語](https://flask.palletsprojects.com/en/stable/)
+
 
 # 今後の展望
+- もっと複雑なデータ構造(sort-keyを作り方を工夫)のItemsを扱えるようにする
+- CI/CD(GithubActionsを想定)で、各種自動化を導入する
+    - テスト自動化、静的解析とチェック自動化、型チェック自動化
+    - コンテナの脆弱性のチェック自動化(trivyやdockleの導入)
+    - dependabotsのよりライブラリの更新チェック自動化
+- 詳細なログ出しとログ保存をして、開発時のデバグ速度向上。運用後のトラブルシュートの容易性向上
+- unittestを用いてローカル環境でできるテストを充実させる。

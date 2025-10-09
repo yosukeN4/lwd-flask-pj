@@ -81,7 +81,7 @@ def item_delete(movies=movies):
     return {"Code": 200, "status": "Movie deleted successfully."}
 
 @app.route('/movies/exists', methods=["GET"])
-def movie_exists(table_name=table_name):
+def movie_exists(movies=movies,table_name=table_name):
     movies_exists: bool = movies.exists(table_name)
 
     return {"Code": 200, "is_movies_exists": movies_exists}
