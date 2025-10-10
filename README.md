@@ -12,6 +12,7 @@ awsリソース, python, flask:　これらを組み合わせて、下記の要�
 - プラットフォームはAWS Serverless環境とする。VPCは不要
 - デプロイは、`sam_cli`を使う。
 - 独自ドメイン名を利用する。`api.ysklab.work`
+- Lambdaは **LWD(LambdaWebAdapter)** を利用し作成したコンテナを利用する。後にECSでもコード変更不要で利用できるようにする。**本企画の挑戦的な試み**
 
 ## 今回やらないこと
 - 詳細なログ出し、ログ保存などの運用面に関する実装
@@ -21,9 +22,11 @@ awsリソース, python, flask:　これらを組み合わせて、下記の要�
     - Lambdaに割り当てるIAMポリシーの最小権限の設定
 
 ## 企画のモチベーション
+flaskのFormを使ったwebアプリのサンプルコードや書籍は多いが、純粋にRestAPIを作り何かしらのデータストアとCRUD操作を実現するコード例は少ない。実務では、endpointの数によらずデータストアと連携するRestAPIを実装するケースがあるため、その事例に対応できるように自らAPIを自作してみることとした。
+
 
 ## 強く参考又は借用したコード
-* `Movies`classと、内部で使われているboto3を使ったpythonのscriptはほぼすべてawsが提供するsdkのサンプルコードを利用
+* `Movies`classと、その内部で使われているboto3を使ったscriptはほぼすべてawsが提供するsdkのサンプルコードを利用
 * リンク先:[dynamodb code examples](https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/python/example_code/dynamodb)
 
 # 構成図
@@ -32,7 +35,7 @@ awsリソース, python, flask:　これらを組み合わせて、下記の要�
 
 - APIGatewayとlambdaはSAM_CLIでデプロイ。
 - dynamodbテーブルは事前に手動で作成
-    - capacityはプロビジョニングで、readもwriteもUnit数=1
+    - capacityはプロビジョニングで、readもwriteもCapacityUnit=1
 
 # データモデルとサンプルデータ
 
@@ -163,15 +166,15 @@ curl -X POST https://target.domain.com/movies/delete \
 
 # テスト
 
-pythonコードを書いてunittestは実施しないが、デプロイ後に
-Postmanから上記`curl`によるエンドテストは実施
+コードを書いてunittestは実施しないが、デプロイ後にPostmanでapiテストは実施
 
 # 参考資料
 * [dynamodb code examples](https://github.com/awsdocs/aws-doc-sdk-examples/tree/main/python/example_code/dynamodb)
 * [SAM_CLI公式ドキュメント](https://github.com/aws/aws-sam-cli)
 * [boto3公式ドキュメント](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
 * [flask公式ドキュメント_英語](https://flask.palletsprojects.com/en/stable/)
-
+* [LWD公式リポジトリ](https://github.com/awslabs/aws-lambda-web-adapter)
+* [LWD解説記事](https://aws.amazon.com/jp/builders-flash/202301/lambda-web-adapter/)
 
 # 今後の展望
 - もっと複雑なデータ構造(sort-keyを作り方を工夫)のItemsを扱えるようにする
