@@ -178,6 +178,7 @@ curl -X POST https://target.domain.com/movies/delete \
 
 # 今後の展望
 - もっと複雑なデータ構造(sort-keyを作り方を工夫)のItemsを扱えるようにする
+- CRUD操作時の例外処理が足りていない。少し間違うと`500`エラーとなるため、間違いの理由を説明し再トライを促す処理が必要
 - CI/CD(GithubActionsを想定)で、各種自動化を導入する
     - テスト自動化、静的解析とチェック自動化、型チェック自動化
     - コンテナの脆弱性のチェック自動化(trivyやdockleの導入)

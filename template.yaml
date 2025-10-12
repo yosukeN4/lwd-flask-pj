@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Stack for lwd-flask-pj
+
+Resources:
+  LwdFlaskPjApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Name: lwd-flask-pj-api
+      EndpointConfiguration: 
+        Type: REGIONAL
+
+  ProxyLambdaFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: .
+      DockerTag: prod
+      DockerBuildArgs:
+        MODE: under_test
+    Properties:
+      PackageType: Image
+      Description: ysklab_portforio_02
+      FunctionName: lwd-flask-pj
+      Environment:
+        Variables:
+          MODE: under_test
+          MAX_ENTRIES: 20
+      Timeout: 60
+      MemorySize: 128
+      Architectures:
+        - x86_64
+      Tags:
+        Project: lwd-flask-pj
+        Owner: ysklab
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+            RestApiId: !Ref LwdFlaskPjApi
+
+Outputs:
+  ProxyLambdaFunction:
+    Description: "ARN for lwd-flask-pj"
+    Value: !GetAtt ProxyLambdaFunction.Arn

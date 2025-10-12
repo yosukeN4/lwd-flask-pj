@@ -16,10 +16,6 @@ logger.setLevel(logging.DEBUG)
 
 app = Flask(__name__)
 
-# class ArgsInfo:
-#     title: str = ""
-#     year: int = 0
-
 # set global variable
 table_name = "test_getstart"
 dyn_resource = boto3.resource("dynamodb")
@@ -39,8 +35,8 @@ def item_get(movies=movies):
     return: code :int and items: dict
     """ 
     title:str = request.args.get('title')
-    year:str = request.args.get('year')
-    item:dict = movies.get_movie(title, int(year))
+    year:int = request.args.get('year', type=int)
+    item:dict = movies.get_movie(title, year)
     logger.debug(f"year: {year}")
     logger.debug(f"title: {title}")
 
@@ -88,14 +84,11 @@ def movie_exists(movies=movies,table_name=table_name):
 
 
 
-@app.route('/home', methods=["GET", "POST"])
-def home():
-    print(f"[debug]: {request.full_path}")
-    print(request.method)
-    print(request.args)
-    logging.info(f"Request full path: {request.full_path}")
-    logging.info(f"Request method: {request.method}")
-    logging.info(f"Request args: {request.args}")
+@app.route('/healthcheck', methods=["GET"])
+def healthcheck():
+    return {"Code":200, "body": "Server is fine."}
+
+
 
 @app.route("/index")
 def index():
