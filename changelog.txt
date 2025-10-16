@@ -1,0 +1,9 @@
+# Changelog
+version = 0.1.0
+Latest day of update: 2025-Oct- 10
+
+
+# NextUpdate
+[] implementting CI/CD pipeline.  
+[] start to use uv package for project management.
+[] commence to use Raff to fromatter and linter.
