@@ -7,3 +7,4 @@ Latest day of update: 2025-Oct- 10
 [] implementting CI/CD pipeline.  
 [] start to use uv package for project management.
 [] commence to use Raff to fromatter and linter.
+[] recreate dynamodb Item table which more complicated one, and upgrade APIs.
