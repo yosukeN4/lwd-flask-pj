@@ -1,0 +1,10 @@
+name: CI/CD Pipeline
+on: push
+jobs:
+  sam:
+    name: check behaviour of sam
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: check sam version
+        run: sam --version

@@ -3,6 +3,15 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   Stack for lwd-flask-pj
 
+Globals:
+  Function:
+    Timeout: 3
+    MemorySize: 128
+    # You can add LoggingConfig parameters such as the Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel. Learn more here https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html#sam-function-loggingconfig.
+    LoggingConfig:
+      LogFormat: Text # Text or JSON
+      ApplicationLogLevel: DEBUG
+
 Resources:
   LwdFlaskPjApi:
     Type: AWS::Serverless::Api
