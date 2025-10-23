@@ -10,3 +10,20 @@ dependencies = [
     "flask>=3.1.2",
     "requests>=2.32.5",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "ruff>=0.14.1",
+]
+
+[tool.ruff]
+exclude = ["tests/*", "docs/*", ".venv/*"]
+line-length = 100
+indent-width = 4
+
+[tool.ruff.lint]  
+select = ["E", "F", "W", "I"]
+ignore = ["E501", "I001", "F401", "F541"]
+
+[tool.ruff.format]
