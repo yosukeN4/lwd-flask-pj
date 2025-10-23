@@ -1,11 +1,14 @@
 # Changelog
-version = 0.1.0
-Latest day of update: 2025-Oct- 10
-
+version = 0.1.1
+Latest day of update: 2025-Oct-23
 
 # NextUpdate
-[] implementting CI/CD pipeline.  
-[] start to use uv package for project management.
-[] commence to use Raff to fromatter and linter.
-[] recreate dynamodb Item table which more complicated one, and upgrade APIs.
+[] make unittest more rich.
+[] recreate dynamodb Item table which more complicated, and several APIs upgrade.
 [] Use OpenAPI3.
+
+# Update-2025-Oct-23 / version 0.1.0
+[x] implementting CI/CD pipeline, which for just run through to end.
+[x] start to use uv package for project management.
+[x] commence to use Raff to fromatter and linter.
+
