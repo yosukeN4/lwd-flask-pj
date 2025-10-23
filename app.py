@@ -33,7 +33,7 @@ def item_get(movies=movies):
     param title-sortkey: str
     param year-hasykey: int
     return: code :int and items: dict
-    """ 
+    """
     title:str = request.args.get('title')
     year:int = request.args.get('year', type=int)
     item:dict = movies.get_movie(title, year)
@@ -50,7 +50,7 @@ def item_add(movies=movies):
     param plot : str
     param rating : str
     return: code :int and status: str
-    """ 
+    """
     data = request.get_json()
     movies.add_movie(
         title  = data.get('title'),
@@ -67,7 +67,7 @@ def item_delete(movies=movies):
     param title-sortkey: str
     param year-hasykey: int
     return: code :int and status: str
-    """ 
+    """
     data = request.get_json()
     movies.delete_movie(
         title  = data.get('title'),

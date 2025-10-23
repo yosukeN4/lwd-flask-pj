@@ -9,3 +9,6 @@ wheels/
 # Virtual environments
 .venv
 .aws-sam
+.ruff_cache
+.pytest_cache
+.mypy_cache
